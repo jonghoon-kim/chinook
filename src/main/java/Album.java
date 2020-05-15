@@ -1,6 +1,8 @@
-import lombok.Data;
+import lombok.*;
 
 import java.util.Objects;
+
+// boiler-plate code
 
 @Data
 public class Album {
