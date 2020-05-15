@@ -1,3 +1,5 @@
+package entities;
+
 import lombok.*;
 
 import java.sql.Connection;

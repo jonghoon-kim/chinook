@@ -1,3 +1,6 @@
+package data;
+
+import entities.Album;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
