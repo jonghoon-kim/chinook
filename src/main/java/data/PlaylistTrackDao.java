@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public class PlaylistTrackDao extends EntityDao {
+public class PlaylistTrackDao extends EntityDao<PlaylistTrack> {
     //region singleton
     private PlaylistTrackDao() {
     }
@@ -22,6 +22,44 @@ public class PlaylistTrackDao extends EntityDao {
         return _instance;
     }
     //endregion
+
+    @SneakyThrows
+    @Override
+    protected PlaylistTrack readEntity(ResultSet result) {
+        PlaylistTrack playListTrack = new PlaylistTrack();
+
+        playListTrack.setPlaylistId(result.getInt(1));
+        playListTrack.setTrackId(result.getInt(2));
+
+        return playListTrack;
+    }
+
+    @Override
+    protected String getCountQuery() {
+        //language=TSQL
+        return "select count(*) from PlaylistTrack";
+    }
+
+    @SneakyThrows
+    public PlaylistTrack getByKey(int playlistId, int trackId){
+        //language=TSQL
+        String query = "select * from PlaylistTrack where playlistId = ? and trackId = ?";
+
+        return getOne(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, playlistId);
+                statement.setInt(2, trackId);
+            }
+        });
+    }
+
+    @Override
+    protected String getAllQuery() {
+        //language=TSQL
+        return "select * from PlaylistTrack";
+    }
 
     @SneakyThrows
     public boolean insert(PlaylistTrack playListTrack){
@@ -44,94 +82,6 @@ public class PlaylistTrackDao extends EntityDao {
         String query = "delete PlaylistTrack where playlistId = ? and trackId = ?";
 
         return execute(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, playlistId);
-                statement.setInt(2, trackId);
-            }
-        });
-    }
-
-    @SneakyThrows
-    protected ArrayList<PlaylistTrack> getMany(String query, ParameterSetter parameterSetter) {
-        Connection connection = getConnection();
-
-        PreparedStatement statement = connection.prepareStatement(query);
-        if (parameterSetter != null)
-            parameterSetter.setValue(statement);
-
-        ResultSet result = statement.executeQuery();
-
-        ArrayList<PlaylistTrack> playListTracks = new ArrayList<>();
-        while (result.next()){
-            PlaylistTrack playListTrack = readPlaylistTrack(result);
-            playListTracks.add(playListTrack);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return playListTracks;
-    }
-
-    @SneakyThrows
-    protected PlaylistTrack getOne(String query, ParameterSetter parameterSetter){
-        Connection connection = getConnection();
-
-        PreparedStatement statement = connection.prepareStatement(query);
-
-        if (parameterSetter != null)
-            parameterSetter.setValue(statement);
-
-        ResultSet result = statement.executeQuery();
-
-        ArrayList<PlaylistTrack> playListTracks = new ArrayList<>();
-        while (result.next()){
-            PlaylistTrack playListTrack = readPlaylistTrack(result);
-            playListTracks.add(playListTrack);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return playListTracks.size() == 0 ? null : playListTracks.get(0);
-    }
-
-    @SneakyThrows
-    private PlaylistTrack readPlaylistTrack(ResultSet result) {
-        PlaylistTrack playListTrack = new PlaylistTrack();
-
-        playListTrack.setPlaylistId(result.getInt(1));
-        playListTrack.setTrackId(result.getInt(2));
-
-        return playListTrack;
-    }
-
-    @SneakyThrows
-    public ArrayList<PlaylistTrack> getAll() {
-        //language=TSQL
-        String query = "select * from PlaylistTrack";
-
-        return getMany(query, null);
-    }
-
-    @SneakyThrows
-    public int getCount(){
-        //language=TSQL
-        String query = "select count(*) from PlaylistTrack";
-
-        return getInt(query, null);
-    }
-
-    @SneakyThrows
-    public PlaylistTrack getByKey(int playlistId, int trackId){
-        //language=TSQL
-        String query = "select * from PlaylistTrack where playlistId = ? and trackId = ?";
-
-        return getOne(query, new ParameterSetter() {
             @SneakyThrows
             @Override
             public void setValue(PreparedStatement statement) {

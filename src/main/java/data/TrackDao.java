@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public class TrackDao extends EntityDao {
+public class TrackDao extends EntityDao<Track> {
     //region singleton
     private TrackDao() {
     }
@@ -22,6 +22,47 @@ public class TrackDao extends EntityDao {
         return _instance;
     }
     //endregion
+
+
+    @SneakyThrows
+    @Override
+    protected Track readEntity(ResultSet result) {
+        Track entity = new Track();
+
+        entity.setTrackId(result.getInt(1));
+        entity.setName(result.getString(2));
+        entity.setAlbumId(result.getInt(3));
+        entity.setGenreId(result.getInt(4));
+        entity.setUnitPrice(result.getFloat(5));
+
+        return entity;
+    }
+
+    @Override
+    protected String getCountQuery() {
+        //language=TSQL
+        return "select count(*) from Track";
+    }
+
+    @SneakyThrows
+    public Track getByKey(int key){
+        //language=TSQL
+        String query = "select * from track where trackId = ?";
+
+        return getOne(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, key);
+            }
+        });
+    }
+
+    @Override
+    protected String getAllQuery() {
+        //language=TSQL
+        return "select * from Track";
+    }
 
     @SneakyThrows
     public boolean insert(Track track){
@@ -73,101 +114,11 @@ public class TrackDao extends EntityDao {
     }
 
     @SneakyThrows
-    protected ArrayList<Track> getMany(String query, ParameterSetter parameterSetter) {
-        Connection connection = getConnection();
-
-        PreparedStatement statement = connection.prepareStatement(query);
-        if (parameterSetter != null)
-            parameterSetter.setValue(statement);
-
-        ResultSet result = statement.executeQuery();
-
-        ArrayList<Track> tracks = new ArrayList<>();
-        while (result.next()){
-            Track track = readTrack(result);
-            tracks.add(track);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return tracks;
-    }
-
-    @SneakyThrows
-    protected Track getOne(String query, ParameterSetter parameterSetter){
-        Connection connection = getConnection();
-
-        PreparedStatement statement = connection.prepareStatement(query);
-
-        if (parameterSetter != null)
-            parameterSetter.setValue(statement);
-
-        ResultSet result = statement.executeQuery();
-
-        ArrayList<Track> tracks = new ArrayList<>();
-        while (result.next()){
-            Track track = readTrack(result);
-            tracks.add(track);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return tracks.size() == 0 ? null : tracks.get(0);
-    }
-
-    @SneakyThrows
-    private Track readTrack(ResultSet result) {
-        Track Track = new Track();
-
-        Track.setTrackId(result.getInt(1));
-        Track.setName(result.getString(2));
-        Track.setAlbumId(result.getInt(3));
-        Track.setGenreId(result.getInt(4));
-        Track.setUnitPrice(result.getFloat(5));
-
-        return Track;
-    }
-
-    @SneakyThrows
-    public ArrayList<Track> getAll() {
-        //language=TSQL
-        String query = "select * from Track";
-
-        return getMany(query, null);
-    }
-
-    @SneakyThrows
-    public int getCount(){
-        //language=TSQL
-        String query = "select count(*) from Track";
-
-        return getInt(query, null);
-    }
-
-    @SneakyThrows
     public int getMaxTrackId() {
         //language=TSQL
         String query = "select top 1 trackId from track order by trackId desc ";
 
         return getInt(query, null);
-    }
-
-    @SneakyThrows
-    public Track getByKey(int key){
-        //language=TSQL
-        String query = "select * from track where trackId = ?";
-
-        return getOne(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
     }
 
     @SneakyThrows

@@ -23,20 +23,17 @@ public class AlbumDao extends EntityDao<Album> {
 
     //endregion
 
-    //region helper methods
-
     @SneakyThrows
     @Override
     protected Album readEntity(ResultSet result) {
-        Album album = new Album();
+        Album entity = new Album();
 
-        album.setAlbumId(result.getInt(1));
-        album.setTitle(result.getString(2));
-        album.setArtistId(result.getInt(3));
+        entity.setAlbumId(result.getInt(1));
+        entity.setTitle(result.getString(2));
+        entity.setArtistId(result.getInt(3));
 
-        return album;
+        return entity;
     }
-    //endregion
 
     @Override
     protected String getCountQuery() {
@@ -58,35 +55,10 @@ public class AlbumDao extends EntityDao<Album> {
         });
     }
 
-    @SneakyThrows
-    public ArrayList<Album> getByArtistId(int artistId) {
+    @Override
+    protected String getAllQuery() {
         //language=TSQL
-        String query = "select * from Album where ArtistId = ?";
-
-        // verbose / decorating code
-        return getMany(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, artistId);
-            }
-        });
-    }
-
-    @SneakyThrows
-    public ArrayList<Album> getAll() {
-        //language=TSQL
-        String query = "select * from Album";
-
-        return getMany(query, null);
-    }
-
-    @SneakyThrows
-    public int getMaxAlbumId() {
-        //language=TSQL
-        String query = "select top 1 AlbumId from Album order by AlbumId desc ";
-
-        return getInt(query, null);
+        return "select * from Album";
     }
 
     @SneakyThrows
@@ -132,5 +104,28 @@ public class AlbumDao extends EntityDao<Album> {
                 statement.setInt(1, key);
             }
         });
+    }
+
+    @SneakyThrows
+    public ArrayList<Album> getByArtistId(int artistId) {
+        //language=TSQL
+        String query = "select * from Album where ArtistId = ?";
+
+        // verbose / decorating code
+        return getMany(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, artistId);
+            }
+        });
+    }
+
+    @SneakyThrows
+    public int getMaxAlbumId() {
+        //language=TSQL
+        String query = "select top 1 AlbumId from Album order by AlbumId desc ";
+
+        return getInt(query, null);
     }
 }

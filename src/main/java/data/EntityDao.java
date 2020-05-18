@@ -1,5 +1,6 @@
 package data;
 
+import entities.Album;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
@@ -22,6 +23,8 @@ public abstract class EntityDao<E> {
     protected abstract E readEntity(ResultSet result);
 
     protected abstract String getCountQuery();
+
+    protected abstract String getAllQuery();
     //endregion
 
     @SneakyThrows
@@ -95,13 +98,6 @@ public abstract class EntityDao<E> {
     }
 
     @SneakyThrows
-    public final int getCount(){
-        String query = getCountQuery();
-
-        return getInt(query, null);
-    }
-
-    @SneakyThrows
     protected final boolean execute(String query, ParameterSetter parameterSetter){
         Connection connection = getConnection();
 
@@ -116,4 +112,23 @@ public abstract class EntityDao<E> {
 
         return rowCount == 1;
     }
+
+    @SneakyThrows
+    public final int getCount(){
+        String query = getCountQuery();
+
+        return getInt(query, null);
+    }
+
+    @SneakyThrows
+    public final ArrayList<E> getAll() {
+        //language=TSQL
+        String query = getAllQuery();
+
+        return getMany(query, null);
+    }
+
+    public abstract boolean insert(E entity);
+
+    public abstract boolean update(E entity);
 }
