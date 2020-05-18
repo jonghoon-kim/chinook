@@ -46,12 +46,13 @@ public class AlbumDao {
     //endregion
 
     @SneakyThrows
-    public int getCount(){
+    private int getInt(String query, ParameterSetter parameterSetter){
         Connection connection = getConnection();
 
-        //language=TSQL
-        String query = "select count(*) from Album";
         PreparedStatement statement = connection.prepareStatement(query);
+
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
 
         ResultSet result = statement.executeQuery();
 
@@ -68,13 +69,21 @@ public class AlbumDao {
     }
 
     @SneakyThrows
-    public Album getByKey(int key){
+    public int getCount(){
+        //language=TSQL
+        String query = "select count(*) from Album";
+
+        return getInt(query, null);
+    }
+
+    @SneakyThrows
+    private Album getOne(String query, ParameterSetter parameterSetter){
         Connection connection = getConnection();
 
-        //language=TSQL
-        String query = "select * from Album where AlbumId = ?";
         PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, key);
+
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
 
         ResultSet result = statement.executeQuery();
 
@@ -92,13 +101,26 @@ public class AlbumDao {
     }
 
     @SneakyThrows
-    public ArrayList<Album> getByArtistId(int artistId) {
+    public Album getByKey(int key){
+        //language=TSQL
+        String query = "select * from Album where AlbumId = ?";
+
+        return getOne(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, key);
+            }
+        });
+    }
+
+    @SneakyThrows
+    private ArrayList<Album> getMany(String query, ParameterSetter parameterSetter) {
         Connection connection = getConnection();
 
-        //language=TSQL
-        String query = "select * from Album where ArtistId = ?";
         PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, artistId);
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
 
         ResultSet result = statement.executeQuery();
 
@@ -113,103 +135,97 @@ public class AlbumDao {
         statement.close();
 
         return albums;
+    }
+
+    @SneakyThrows
+    public ArrayList<Album> getByArtistId(int artistId) {
+        //language=TSQL
+        String query = "select * from Album where ArtistId = ?";
+
+        // verbose / decorating code
+        return getMany(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, artistId);
+            }
+        });
     }
 
     @SneakyThrows
     public ArrayList<Album> getAll() {
-        Connection connection = getConnection();
-
         //language=TSQL
         String query = "select * from Album";
-        PreparedStatement statement = connection.prepareStatement(query);
 
-        ResultSet result = statement.executeQuery();
-
-        ArrayList<Album> albums = new ArrayList<>();
-        while (result.next()){
-            Album album = readAlbum(result);
-            albums.add(album);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return albums;
+        return getMany(query, null);
     }
 
     @SneakyThrows
-    public Integer getMaxAlbumId() {
-        Connection connection = getConnection();
-
+    public int getMaxAlbumId() {
         //language=TSQL
         String query = "select top 1 AlbumId from Album order by AlbumId desc ";
+
+        return getInt(query, null);
+    }
+
+    @SneakyThrows
+    public boolean execute(String query, ParameterSetter parameterSetter){
+        Connection connection = getConnection();
+
         PreparedStatement statement = connection.prepareStatement(query);
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
 
-        ResultSet result = statement.executeQuery();
+        int rowCount = statement.executeUpdate();
 
-        Integer value = null;
-        if (result.next())
-            value = result.getInt(1);
-
-        result.close();
         statement.getConnection().close();
         statement.close();
 
-        return value;
+        return rowCount == 1;
     }
 
     @SneakyThrows
     public boolean insert(Album album){
-        Connection connection = getConnection();
-
         //language=TSQL
         String query = "insert into Album values (?, ?)";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, album.getTitle());
-        statement.setInt(2, album.getArtistId());
 
-        int rowCount = statement.executeUpdate();
-
-        statement.getConnection().close();
-        statement.close();
-
-        return rowCount == 1;
+        return execute(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setString(1, album.getTitle());
+                statement.setInt(2, album.getArtistId());
+            }
+        });
     }
 
     @SneakyThrows
     public boolean update(Album album){
-        Connection connection = getConnection();
-
         //language=TSQL
         String query = "update Album set Title = ?, ArtistId = ? where AlbumId = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, album.getTitle());
-        statement.setInt(2, album.getArtistId());
-        statement.setInt(3, album.getAlbumId());
 
-        int rowCount = statement.executeUpdate();
-
-        statement.getConnection().close();
-        statement.close();
-
-        return rowCount == 1;
+        return execute(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setString(1, album.getTitle());
+                statement.setInt(2, album.getArtistId());
+                statement.setInt(3, album.getAlbumId());
+            }
+        });
     }
 
     @SneakyThrows
     public boolean deleteByKey(int key){
-        Connection connection = getConnection();
-
         //language=TSQL
         String query = "delete Album where AlbumId = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, key);
 
-        int rowCount = statement.executeUpdate();
-
-        statement.getConnection().close();
-        statement.close();
-
-        return rowCount == 1;
+        return execute(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, key);
+            }
+        });
     }
 }
