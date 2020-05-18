@@ -40,7 +40,7 @@ public class AlbumDao {
     @SneakyThrows
     private Connection getConnection() {
         String connString =
-                "jdbc:sqlserver://192.168.1.33;database=Chinook;user=sa;password=3512";
+                "jdbc:sqlserver://192.168.1.5;database=Chinook;user=sa;password=3512";
         return DriverManager.getConnection(connString);
     }
     //endregion
