@@ -5,14 +5,11 @@ import entities.Artist;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public class ArtistDao {
-
-
+public class ArtistDao extends EntityDao {
     //region singleton
     private ArtistDao() {
     }
@@ -28,76 +25,55 @@ public class ArtistDao {
     //endregion
 
     @SneakyThrows
-    private Artist readArtist(ResultSet result) {
-        Artist artist = new Artist();
+    public boolean insert(Artist artist){
+        //language=TSQL
+        String query = "insert into artist values (?)";
 
-        artist.setArtistId(result.getInt(1));
-        artist.setName(result.getString(2));
-
-        return artist;
+        return execute(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setString(1, artist.getName());
+            }
+        });
     }
 
     @SneakyThrows
-    private Connection getConnection() {
-        String connString =
-                "jdbc:sqlserver://192.168.1.5;database=Chinook;user=sa;password=3512";
-        return DriverManager.getConnection(connString);
+    public boolean update(Artist artist){
+        //language=TSQL
+        String query = "update Artist set name = ? where ArtistId = ?";
+
+        return execute(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setString(1, artist.getName());
+                statement.setInt(2, artist.getArtistId());
+            }
+        });
     }
-    //endregion
 
     @SneakyThrows
-    public int getCount(){
+    public boolean deleteByKey(int key){
+        //language=TSQL
+        String query = "delete artist where artistId = ?";
+
+        return execute(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, key);
+            }
+        });
+    }
+
+    @SneakyThrows
+    protected ArrayList<Artist> getMany(String query, ParameterSetter parameterSetter) {
         Connection connection = getConnection();
 
-        //language=TSQL
-        String query = "select count(*) from Artist";
         PreparedStatement statement = connection.prepareStatement(query);
-
-        ResultSet result = statement.executeQuery();
-
-        int count = 0;
-        while (result.next()){
-            count = result.getInt(1);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return count;
-    }
-
-    @SneakyThrows
-    public Artist getByKey(int key){
-        Connection connection = getConnection();
-
-        //language=TSQL
-        String query = "select * from Artist where ArtistId = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, key);
-
-        ResultSet result = statement.executeQuery();
-
-        ArrayList<Artist> artists = new ArrayList<>();
-        while (result.next()){
-            Artist artist = readArtist(result);
-            artists.add(artist);
-        }
-
-        result.close();
-        statement.getConnection().close();
-        statement.close();
-
-        return artists.size() == 0 ? null : artists.get(0);
-    }
-
-    @SneakyThrows
-    public ArrayList<Artist> getAll() {
-        Connection connection = getConnection();
-
-        //language=TSQL
-        String query = "select * from Artist";
-        PreparedStatement statement = connection.prepareStatement(query);
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
 
         ResultSet result = statement.executeQuery();
 
@@ -115,74 +91,74 @@ public class ArtistDao {
     }
 
     @SneakyThrows
-    public Integer getMaxArtistId() {
+    protected Artist getOne(String query, ParameterSetter parameterSetter){
         Connection connection = getConnection();
 
-        //language=TSQL
-        String query = "select top 1 ArtistId from Artist order by ArtistId desc ";
         PreparedStatement statement = connection.prepareStatement(query);
+
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
 
         ResultSet result = statement.executeQuery();
 
-        Integer value = null;
-        if (result.next())
-            value = result.getInt(1);
+        ArrayList<Artist> artists = new ArrayList<>();
+        while (result.next()){
+            Artist artist = readArtist(result);
+            artists.add(artist);
+        }
 
         result.close();
         statement.getConnection().close();
         statement.close();
 
-        return value;
+        return artists.size() == 0 ? null : artists.get(0);
     }
 
     @SneakyThrows
-    public boolean insert(Artist artist){
-        Connection connection = getConnection();
+    private Artist readArtist(ResultSet result) {
+        Artist artist = new Artist();
 
-        //language=TSQL
-        String query = "insert into Artist values (?)";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, artist.getName());
+        artist.setArtistId(result.getInt(1));
+        artist.setName(result.getString(2));
 
-        int rowCount = statement.executeUpdate();
-
-        statement.getConnection().close();
-        statement.close();
-
-        return rowCount == 1;
+        return artist;
     }
 
     @SneakyThrows
-    public boolean update(Artist artist){
-        Connection connection = getConnection();
-
+    public ArrayList<Artist> getAll() {
         //language=TSQL
-        String query = "update Artist set Name = ? where ArtistId = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, artist.getName());
-        statement.setInt(2, artist.getArtistId());
+        String query = "select * from Artist";
 
-        int rowCount = statement.executeUpdate();
-
-        statement.getConnection().close();
-        statement.close();
-
-        return rowCount == 1;
+        return getMany(query, null);
     }
 
     @SneakyThrows
-    public boolean deleteByKey(int key){
-        Connection connection = getConnection();
-
+    public int getCount(){
         //language=TSQL
-        String query = "delete Artist where ArtistId = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, key);
-        int rowCount = statement.executeUpdate();
+        String query = "select count(*) from Artist";
 
-        statement.getConnection().close();
-        statement.close();
+        return getInt(query, null);
+    }
 
-        return rowCount == 1;
+    @SneakyThrows
+    public int getMaxArtistId() {
+        //language=TSQL
+        String query = "select top 1 artistId from artist order by artistId desc ";
+
+        return getInt(query, null);
+    }
+
+    @SneakyThrows
+    public Artist getByKey(int key){
+        //language=TSQL
+        String query = "select * from artist where artistId = ?";
+
+        return getOne(query, new ParameterSetter() {
+            @SneakyThrows
+            @Override
+            public void setValue(PreparedStatement statement) {
+                statement.setInt(1, key);
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-
+package data;
 
 import data.TrackDao;
 import entities.Track;
@@ -34,6 +34,17 @@ public class TrackDaoTest {
 
         for (Track track : tracks) {
             assertEquals(1, track.getAlbumId());
+        }
+    }
+
+    @Test
+    void getByGenreId() {
+        ArrayList<Track> tracks = TrackDao.getInstance().getByGenreId(1);
+
+        assertTrue(tracks.size() > 0);
+
+        for (Track track : tracks) {
+            assertEquals(1, track.getGenreId());
         }
     }
 

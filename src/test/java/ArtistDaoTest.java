@@ -1,3 +1,5 @@
+package data;
+
 import data.ArtistDao;
 import entities.Artist;
 import org.junit.jupiter.api.Test;
