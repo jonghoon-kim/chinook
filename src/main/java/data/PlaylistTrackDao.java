@@ -1,11 +1,13 @@
 package data;
 
 import entities.PlaylistTrack;
+import exceptions.WrongUpdateException;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class PlaylistTrackDao extends EntityDao<PlaylistTrack> {
@@ -119,5 +121,11 @@ public class PlaylistTrackDao extends EntityDao<PlaylistTrack> {
                 statement.setInt(1, trackId);
             }
         });
+    }
+
+    @SneakyThrows
+    @Override
+    public boolean update(PlaylistTrack entity) {
+        throw new WrongUpdateException(entity.getTrackId(), LocalDateTime.now());
     }
 }
