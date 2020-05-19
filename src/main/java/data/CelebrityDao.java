@@ -1,13 +1,14 @@
 package data;
 
 import data.base.EntityDao;
+import data.base.StringEntityDao;
 import entities.Celebrity;
 import lombok.SneakyThrows;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class CelebrityDao extends EntityDao<Celebrity> {
+public class CelebrityDao extends StringEntityDao<Celebrity> {
     //region singleton
     private CelebrityDao() {
     }
@@ -39,18 +40,10 @@ public class CelebrityDao extends EntityDao<Celebrity> {
         return "select count(*) from Celebrity";
     }
 
-    @SneakyThrows
-    public Celebrity getByKey(String key){
+    @Override
+    protected String getByKeyQuery() {
         //language=TSQL
-        String query = "select * from Celebrity where Name = ?";
-
-        return getOne(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setString(1, key);
-            }
-        });
+        return "select * from Celebrity where Name = ?";
     }
 
     @Override
@@ -89,17 +82,9 @@ public class CelebrityDao extends EntityDao<Celebrity> {
         });
     }
 
-    @SneakyThrows
-    public boolean deleteByKey(String key){
+    @Override
+    protected String deleteByKeyQuery() {
         //language=TSQL
-        String query = "delete Celebrity where Name = ?";
-
-        return execute(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setString(1, key);
-            }
-        });
+        return "delete Celebrity where Name = ?";
     }
 }

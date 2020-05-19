@@ -43,18 +43,10 @@ public class AlbumDao extends IntEntityDao<Album> {
         return "select count(*) from Album";
     }
 
-    @SneakyThrows
-    public Album getByKey(int key){
+    @Override
+    protected String getByKeyQuery() {
         //language=TSQL
-        String query = "select * from Album where AlbumId = ?";
-
-        return getOne(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
+        return "select * from Album where AlbumId = ?";
     }
 
     @Override
@@ -94,18 +86,10 @@ public class AlbumDao extends IntEntityDao<Album> {
         });
     }
 
-    @SneakyThrows
-    public boolean deleteByKey(int key){
+    @Override
+    protected String deleteByKeyQuery() {
         //language=TSQL
-        String query = "delete Album where AlbumId = ?";
-
-        return execute(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
+        return "delete Album where AlbumId = ?";
     }
 
     @SneakyThrows

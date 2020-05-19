@@ -1,6 +1,7 @@
 package data;
 
 import data.base.EntityDao;
+import data.base.IntIntEntityDao;
 import entities.PlaylistTrack;
 import exceptions.WrongUpdateException;
 import lombok.SneakyThrows;
@@ -10,7 +11,7 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class PlaylistTrackDao extends EntityDao<PlaylistTrack> {
+public class PlaylistTrackDao extends IntIntEntityDao<PlaylistTrack> {
     //region singleton
     private PlaylistTrackDao() {
     }

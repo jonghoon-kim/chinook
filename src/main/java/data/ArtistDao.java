@@ -41,18 +41,10 @@ public class ArtistDao extends IntEntityDao<Artist> {
         return "select count(*) from Artist";
     }
 
-    @SneakyThrows
-    public Artist getByKey(int key){
+    @Override
+    protected String getByKeyQuery() {
         //language=TSQL
-        String query = "select * from artist where artistId = ?";
-
-        return getOne(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
+        return "select * from artist where artistId = ?";
     }
 
     @Override
@@ -90,18 +82,10 @@ public class ArtistDao extends IntEntityDao<Artist> {
         });
     }
 
-    @SneakyThrows
-    public boolean deleteByKey(int key){
+    @Override
+    protected String deleteByKeyQuery() {
         //language=TSQL
-        String query = "delete artist where artistId = ?";
-
-        return execute(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
+        return "delete Artist where ArtistId = ?";
     }
 
     @SneakyThrows

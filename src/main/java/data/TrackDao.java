@@ -1,6 +1,7 @@
 package data;
 
 import data.base.EntityDao;
+import data.base.IntEntityDao;
 import entities.Track;
 import lombok.SneakyThrows;
 
@@ -8,7 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public class TrackDao extends EntityDao<Track> {
+public class TrackDao extends IntEntityDao<Track> {
     //region singleton
     private TrackDao() {
     }
@@ -44,18 +45,10 @@ public class TrackDao extends EntityDao<Track> {
         return "select count(*) from Track";
     }
 
-    @SneakyThrows
-    public Track getByKey(int key){
+    @Override
+    protected String getByKeyQuery() {
         //language=TSQL
-        String query = "select * from track where trackId = ?";
-
-        return getOne(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
+        return "select * from track where trackId = ?";
     }
 
     @Override
@@ -99,18 +92,10 @@ public class TrackDao extends EntityDao<Track> {
         });
     }
 
-    @SneakyThrows
-    public boolean deleteByKey(int key){
+    @Override
+    protected String deleteByKeyQuery() {
         //language=TSQL
-        String query = "delete track where trackId = ?";
-
-        return execute(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, key);
-            }
-        });
+        return "delete track where trackId = ?";
     }
 
     @SneakyThrows
