@@ -2,11 +2,12 @@ package data.base;
 
 import data.ParameterSetter;
 import entities.Album;
+import entities.base.Entity;
 import lombok.SneakyThrows;
 
 import java.sql.PreparedStatement;
 
-public abstract class IntEntityDao<E> extends SingleKeyEntityDao<E, Integer>{
+public abstract class IntEntityDao<E extends Entity> extends SingleKeyEntityDao<E, Integer>{
     @SneakyThrows
     public final E getByKey(int key){
         //language=TSQL

@@ -1,7 +1,7 @@
 package data.base;
 
 import data.ParameterSetter;
-import entities.Album;
+import entities.base.Entity;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public abstract class EntityDao<E> {
+public abstract class EntityDao<E extends Entity> {
     //region helper methods
     @SneakyThrows
     protected final Connection getConnection() {
@@ -132,4 +132,15 @@ public abstract class EntityDao<E> {
     public abstract boolean insert(E entity);
 
     public abstract boolean update(E entity);
+
+    public String toBigString(){
+        ArrayList<E> entities = getAll();
+
+        StringBuilder builder = new StringBuilder();
+        for (E entity:entities) {
+            builder.append(entity.getKeyText() + "\n");
+        }
+
+        return builder.toString();
+    }
 }

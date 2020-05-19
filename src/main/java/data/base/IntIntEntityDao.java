@@ -2,11 +2,12 @@ package data.base;
 
 import data.ParameterSetter;
 import entities.PlaylistTrack;
+import entities.base.Entity;
 import lombok.SneakyThrows;
 
 import java.sql.PreparedStatement;
 
-public abstract class IntIntEntityDao<E> extends DoubleKeyEntityDao<E, Integer, Integer> {
+public abstract class IntIntEntityDao<E extends Entity> extends DoubleKeyEntityDao<E, Integer, Integer> {
     @SneakyThrows
     public final E getByKey(int key1, int key2){
         //language=TSQL
