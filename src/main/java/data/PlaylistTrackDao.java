@@ -43,19 +43,10 @@ public class PlaylistTrackDao extends IntIntEntityDao<PlaylistTrack> {
         return "select count(*) from PlaylistTrack";
     }
 
-    @SneakyThrows
-    public PlaylistTrack getByKey(int playlistId, int trackId){
+    @Override
+    protected String getByKeyQuery() {
         //language=TSQL
-        String query = "select * from PlaylistTrack where playlistId = ? and trackId = ?";
-
-        return getOne(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, playlistId);
-                statement.setInt(2, trackId);
-            }
-        });
+        return "select * from PlaylistTrack where playlistId = ? and trackId = ?";
     }
 
     @Override
@@ -79,19 +70,10 @@ public class PlaylistTrackDao extends IntIntEntityDao<PlaylistTrack> {
         });
     }
 
-    @SneakyThrows
-    public boolean deleteByKey(int playlistId, int trackId){
+    @Override
+    protected String deleteByKeyQuery() {
         //language=TSQL
-        String query = "delete PlaylistTrack where playlistId = ? and trackId = ?";
-
-        return execute(query, new ParameterSetter() {
-            @SneakyThrows
-            @Override
-            public void setValue(PreparedStatement statement) {
-                statement.setInt(1, playlistId);
-                statement.setInt(2, trackId);
-            }
-        });
+        return "delete PlaylistTrack where playlistId = ? and trackId = ?";
     }
 
     @SneakyThrows
