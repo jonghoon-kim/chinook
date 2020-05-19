@@ -56,7 +56,7 @@ public class AlbumDao extends IntEntityDao<Album> {
     }
 
     @SneakyThrows
-    public boolean insert(Album album){
+    public boolean insert(Album entity){
         //language=TSQL
         String query = "insert into Album values (?, ?)";
 
@@ -64,8 +64,8 @@ public class AlbumDao extends IntEntityDao<Album> {
             @SneakyThrows
             @Override
             public void setValue(PreparedStatement statement) {
-                statement.setString(1, album.getTitle());
-                statement.setInt(2, album.getArtistId());
+                statement.setString(1, entity.getTitle());
+                statement.setInt(2, entity.getArtistId());
             }
         });
     }

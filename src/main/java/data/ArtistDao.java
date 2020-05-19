@@ -54,7 +54,7 @@ public class ArtistDao extends IntEntityDao<Artist> {
     }
 
     @SneakyThrows
-    public boolean insert(Artist artist){
+    public boolean insert(Artist entity){
         //language=TSQL
         String query = "insert into artist values (?)";
 
@@ -62,13 +62,13 @@ public class ArtistDao extends IntEntityDao<Artist> {
             @SneakyThrows
             @Override
             public void setValue(PreparedStatement statement) {
-                statement.setString(1, artist.getName());
+                statement.setString(1, entity.getName());
             }
         });
     }
 
     @SneakyThrows
-    public boolean update(Artist artist){
+    public boolean update(Artist entity){
         //language=TSQL
         String query = "update Artist set name = ? where ArtistId = ?";
 
@@ -76,8 +76,8 @@ public class ArtistDao extends IntEntityDao<Artist> {
             @SneakyThrows
             @Override
             public void setValue(PreparedStatement statement) {
-                statement.setString(1, artist.getName());
-                statement.setInt(2, artist.getArtistId());
+                statement.setString(1, entity.getName());
+                statement.setInt(2, entity.getArtistId());
             }
         });
     }
