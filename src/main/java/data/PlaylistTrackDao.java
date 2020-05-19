@@ -1,10 +1,10 @@
 package data;
 
+import data.base.EntityDao;
 import entities.PlaylistTrack;
 import exceptions.WrongUpdateException;
 import lombok.SneakyThrows;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;

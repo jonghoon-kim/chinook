@@ -1,6 +1,6 @@
 package data;
 
-import entities.Album;
+import data.base.EntityDao;
 import entities.Celebrity;
 import lombok.SneakyThrows;
 

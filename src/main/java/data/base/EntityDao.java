@@ -1,5 +1,6 @@
-package data;
+package data.base;
 
+import data.ParameterSetter;
 import entities.Album;
 import lombok.SneakyThrows;
 

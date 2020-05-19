@@ -1,15 +1,15 @@
 package data;
 
 
+import data.base.EntityDao;
+import data.base.IntEntityDao;
 import entities.Artist;
 import lombok.SneakyThrows;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
 
-public class ArtistDao extends EntityDao<Artist> {
+public class ArtistDao extends IntEntityDao<Artist> {
     //region singleton
     private ArtistDao() {
     }
