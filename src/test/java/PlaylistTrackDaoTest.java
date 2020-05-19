@@ -1,12 +1,18 @@
 import data.PlaylistTrackDao;
 import data.TrackDao;
 import entities.PlaylistTrack;
+import helpers.ConnectionString;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PlaylistPlaylistTrackDaoTest {
+    @BeforeAll
+    static void initializeConnectionString(){
+        ConnectionString.getInstance().initialize("jdbc:sqlserver://192.168.1.5;database=Chinook;user=sa;password=3512");
+    }
 
     @Test
     void insert() {

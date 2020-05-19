@@ -1,5 +1,7 @@
 import data.AlbumDao;
 import entities.Album;
+import helpers.ConnectionString;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -8,6 +10,11 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AlbumDaoTest {
+    @BeforeAll
+    static void initializeConnectionString(){
+        ConnectionString.getInstance().initialize("jdbc:sqlserver://192.168.1.5;database=Chinook;user=sa;password=3512");
+    }
+
     @Test
     void getCount() {
         int count = AlbumDao.getInstance().getCount();

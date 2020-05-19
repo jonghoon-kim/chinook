@@ -2,6 +2,8 @@ package data;
 
 import data.ArtistDao;
 import entities.Artist;
+import helpers.ConnectionString;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ArtistDaoTest {
+    @BeforeAll
+    static void initializeConnectionString(){
+        ConnectionString.getInstance().initialize("jdbc:sqlserver://192.168.1.5;database=Chinook;user=sa;password=3512");
+    }
 
     @Test
     void getCount() {

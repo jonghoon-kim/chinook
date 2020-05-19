@@ -2,6 +2,8 @@ import data.CelebrityDao;
 import entities.Celebrity;
 import entities.Celebrity;
 import entities.PlaylistTrack;
+import helpers.ConnectionString;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -11,6 +13,10 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CelebrityDaoTest {
+    @BeforeAll
+    static void initializeConnectionString(){
+        ConnectionString.getInstance().initialize("jdbc:sqlserver://192.168.1.5;database=Chinook;user=sa;password=3512");
+    }
 
     @Test
     void getCount의_반환값은_0보다_커야_함() {
