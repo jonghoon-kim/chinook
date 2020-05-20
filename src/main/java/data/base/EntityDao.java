@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public abstract class EntityDao<E extends Entity> {
@@ -96,6 +97,29 @@ public abstract class EntityDao<E extends Entity> {
         statement.close();
 
         return count;
+    }
+
+    @SneakyThrows
+    protected final LocalDateTime getDateTime(String query, ParameterSetter parameterSetter){
+        Connection connection = getConnection();
+
+        PreparedStatement statement = connection.prepareStatement(query);
+
+        if (parameterSetter != null)
+            parameterSetter.setValue(statement);
+
+        ResultSet result = statement.executeQuery();
+
+        LocalDateTime value = null;
+        while (result.next()){
+            value = result.getTimestamp(1).toLocalDateTime();
+        }
+
+        result.close();
+        statement.getConnection().close();
+        statement.close();
+
+        return value;
     }
 
     @SneakyThrows
